@@ -1,0 +1,45 @@
+.dogContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    position: relative;
+}
+
+.dogContainer img {
+    width: 120px;
+    height: auto;
+    transition: transform 0.3s ease;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.dogContainer img:hover {
+    transform: scale(1.2);
+    z-index: 2;
+}
+
+.dogContainer::before {
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 4px;
+    background-color: #a0218e; /* Màu tím */
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translateY(-50%); /* Điều chỉnh để đường nằm chính giữa */
+    z-index: 1;
+}
+.dogContainer::after {
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 4px;
+    background-color: #a0218e; /* Màu tím */
+    position: absolute;
+    bottom: 14%; /* Đặt giữa trang web */
+    left: 0;
+    transform: translateY(-50%); /* Điều chỉnh để đường nằm chính giữa */
+    z-index: 1;
+}

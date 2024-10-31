@@ -1,11 +1,17 @@
-export { auth as middleware } from "@/auth";
+import { withAuth } from "next-auth/middleware"
 
+export default withAuth({
+    // Matches the pages config in `[...nextauth]`
+    pages: {
+        signIn: '/auth/signin',
+    }
+})
 
 export const config = {
     matcher: [
-        // '/((?!auth).*)(.+)|/verify',
-        // "/((?!api|_next/static|_next/image|favicon.ico|/|/auth).*)",
-        '/((?!api|_next/static|_next/image|favicon.ico|auth|verify|product|detailProduct|$).*)', 
+        "/cart",
+        "/pay"
 
-    ],
+
+    ]
 }

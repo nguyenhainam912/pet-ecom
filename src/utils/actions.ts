@@ -1,44 +1,12 @@
 'use server'
 
-import { auth, signIn } from "@/auth";
+import { getServerSession, } from "next-auth/next"
 import { revalidateTag } from 'next/cache'
 import { sendRequest } from "./api";
-
-
-export async function authenticate(username: string, password: string) {
-    try {
-        const r = await signIn("credentials", {
-            username: username,
-            password: password,
-            // callbackUrl: "/",
-            redirect: false,
-        })
-        console.log(">>> check r: ", r)
-        return r;
-    } catch (error) {
-        if ((error as any).name === "InvalidEmailPasswordError") {
-            return {
-                error: (error as any).type,
-                code: 1
-            }
-
-        } else if ((error as any).name === "InactiveAccountError") {
-            return {
-                error: (error as any).type,
-                code: 2
-            }
-        } else {
-            return {
-                error: "Internal server error",
-                code: 0
-            }
-        }
-
-    }
-}
+import { authOptions } from "@/app/api/auth/auth.options";
 
 export const handleCreateUserAction = async (data: any) => {
-    const session = await auth();
+    const session = await getServerSession();
     const res = await sendRequest<IBackendRes<any>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users`,
         method: "POST",
@@ -52,7 +20,7 @@ export const handleCreateUserAction = async (data: any) => {
 }
 
 export const handleUpdateUserAction = async (data: any) => {
-    const session = await auth();
+    const session = await getServerSession();
     const res = await sendRequest<IBackendRes<any>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users`,
         method: "PATCH",
@@ -66,7 +34,7 @@ export const handleUpdateUserAction = async (data: any) => {
 }
 
 export const handleDeleteUserAction = async (id: any) => {
-    const session = await auth();
+    const session = await getServerSession();
     const res = await sendRequest<IBackendRes<any>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/${id}`,
         method: "DELETE",
@@ -76,5 +44,48 @@ export const handleDeleteUserAction = async (id: any) => {
     })
 
     revalidateTag("list-users")
+    return res;
+}
+
+export const handleGetCatalog = async () => {
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/category/catalog`,
+        method: "GET",
+    })
+    return res;
+}
+
+
+export const handleAddCartAction = async (data: any) => {
+    const session = await getServerSession(authOptions);
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/cart`,
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: { ...data }
+    })
+
+    revalidateTag("cart-by-user")
+
+    return res;
+}
+
+export const handleGetCartAction = async () => {
+    const session = await getServerSession(authOptions);
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/cart/byUser`,
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+        },
+        queryParams: {
+            userId: session?.user?._id
+        },
+        nextOption: {
+            next: { tags: ['cart-by-user'] }
+        }
+    })
     return res;
 }

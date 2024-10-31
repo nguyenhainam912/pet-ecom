@@ -38,4 +38,23 @@ declare global {
         access_token: string;
     }
 
+    interface ICategory {
+        _id: string;
+        title: string;
+    }
+
+    interface IProduct {
+        "_id": string;
+        "name": string;
+        "categoryId": ICategory;
+        "subCategoryId": ICategory;
+        "code": string;
+        "image": string;
+        "tag": string;
+        "quantity": number;
+        "price": number;
+        "createdAt": string;
+        "updatedAt": string;
+    }
+
 }
