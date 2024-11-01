@@ -4,6 +4,15 @@ const nextConfig = {
     images: {
       domains: ['matpetfamily.com'],
     },
+    images: {
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'matpetfamily.com',
+          pathname: '**',
+        },
+      ],
+    },
 };
 
 

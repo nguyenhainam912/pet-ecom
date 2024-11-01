@@ -9,8 +9,9 @@ import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import { Box } from "@mui/material";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { handleAddCartAction } from "@/utils/actions";
+import { useDispatch } from "react-redux";
+import { doAddCartAction } from "@/redux/order/orderSlice";
+import { formatPrice } from "@/utils/functionShare";
 
 interface IProps {
   product: IProduct;
@@ -18,7 +19,7 @@ interface IProps {
 const MainCard = (props: IProps) => {
   const { product } = props;
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const dispatch = useDispatch();
 
   const [showButton, setShowButton] = useState(false);
   const handleShowDetail = (id: string) => {
@@ -26,16 +27,14 @@ const MainCard = (props: IProps) => {
   };
 
   const handleAddCart = () => {
-    if (!session) {
-      router.push("/auth/signin");
-    } else {
-      let data = {
-        userId: session.user._id,
-        detail: [{ product: product._id, quantity: 1 }],
-        totalPrice: product.price,
-      };
-      handleAddCartAction(data);
-    }
+    // let data = {
+    //   userId: session.user._id,
+    //   detail: [{ product: product._id, quantity: 1 }],
+    //   totalPrice: product.price,
+    // };
+    dispatch(
+      doAddCartAction({ quantity: 1, detail: product, _id: product._id })
+    );
   };
   return (
     <Card sx={{ maxWidth: 250 }}>
@@ -97,7 +96,7 @@ const MainCard = (props: IProps) => {
           <Typography
             sx={{ color: "#de8ebe", fontSize: "20px", fontWeight: 600 }}
           >
-            {product.price} đ
+            {formatPrice(product.price)}đ
           </Typography>
         </CardContent>
       </CardActionArea>

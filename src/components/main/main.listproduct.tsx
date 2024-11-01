@@ -8,6 +8,7 @@ import MainButton from "./main.button";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import { useSession } from "next-auth/react";
 import { sendRequest } from "@/utils/api";
+import { useRouter } from "next/navigation";
 
 const Div = styled("div")(({ theme }) => ({
   ...theme.typography.button,
@@ -26,6 +27,7 @@ interface IProps {
 
 const MainListProduct = (props: IProps) => {
   const { newProductlists, outstandingProductlists } = props;
+  const router = useRouter();
 
   return (
     <>
@@ -55,9 +57,18 @@ const MainListProduct = (props: IProps) => {
             display: "flex",
             justifyContent: "flex-end",
             marginTop: "20px",
+            "> a": {
+              cursor: "pointer",
+            },
           }}
         >
-          <MainButton>
+          <MainButton
+            onClick={() =>
+              router.push(
+                "/productCatalog/Danh%20Mục%20Cún-6719078976226a9adde6370a?category=category"
+              )
+            }
+          >
             <span
               style={{
                 display: "flex",

@@ -7,8 +7,11 @@ import {
   Drawer,
   Grid,
   InputBase,
+  Menu,
+  MenuItem,
   Stack,
   styled,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import React, { useEffect } from "react";
@@ -29,7 +32,11 @@ import {
 import logo from "../../../public/image/logo.webp";
 import Image from "next/image";
 import Link from "next/link";
-import { handleGetCartAction } from "@/utils/actions";
+import { useSession, signOut } from "next-auth/react";
+import { useSelector } from "react-redux";
+import { formatPrice, handleCaculateTotalPrice } from "@/utils/functionShare";
+import { fetchDefaultImages } from "@/utils/api";
+import { Space } from "antd";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -79,23 +86,72 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function AppHeader() {
   const router = useRouter();
-
+  const { data: session } = useSession();
+  const cart = useSelector((state: any) => state.order.carts);
   const [open, setOpen] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const isMenuOpen = Boolean(anchorEl);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
 
-  let dataCart: any;
-
-  const handleGetCart = async () => {
-    return await handleGetCartAction();
+  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  useEffect(() => {
-    dataCart = handleGetCart();
-    console.log(dataCart);
-  }, []);
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const renderMenu = (
+    <Menu
+      anchorEl={anchorEl}
+      // anchorOrigin={{
+      //     vertical: 'top',
+      //     horizontal: 'right',
+      // }}
+      id={"primary-search-account-menu"}
+      keepMounted
+      // transformOrigin={{
+      //     vertical: 'top',
+      //     horizontal: 'right',
+      // }}
+      open={isMenuOpen}
+      onClose={handleMenuClose}
+      transformOrigin={{ horizontal: "right", vertical: "top" }}
+      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      sx={{
+        "> li": {
+          padding: "20px 30px",
+        },
+      }}
+    >
+      <MenuItem>
+        <Link
+          onClick={() => {
+            handleMenuClose();
+          }}
+          href={`/cart`}
+          style={{
+            color: "unset",
+            textDecoration: "unset",
+          }}
+        >
+          Xem rỏ hàng
+        </Link>
+      </MenuItem>
+      <MenuItem
+        onClick={() => {
+          handleMenuClose();
+          signOut();
+        }}
+      >
+        Logout
+      </MenuItem>
+    </Menu>
+  );
 
   return (
     <AppBar
@@ -154,9 +210,7 @@ export default function AppHeader() {
                 >
                   Thú Cưng
                 </ActiveLink>
-                <ActiveLink href={"/detailProduct/cat"}>Detail</ActiveLink>
-                <ActiveLink href={"/cart"}>Cart</ActiveLink>
-                <ActiveLink href={"/pay"}>Pay</ActiveLink>
+                <div style={{ margin: "0 120px" }}></div>
                 <MainButton onClick={toggleDrawer(true)}>
                   <Box>
                     <Grid
@@ -174,14 +228,46 @@ export default function AppHeader() {
                         <Typography>Giỏ hàng</Typography>
                         <Box>
                           <Typography sx={{ fontSize: "12px" }}>
-                            {dataCart?.data?.length()} Sản phẩm -{" "}
-                            {dataCart?.data?.totalPrice} đ
+                            {cart?.length} Sản phẩm -{" "}
+                            {formatPrice(handleCaculateTotalPrice())}đ
                           </Typography>
                         </Box>
                       </Grid>
                     </Grid>
                   </Box>
                 </MainButton>
+                <Box
+                  sx={{
+                    display: { xs: "none", md: "flex" },
+                    gap: "20px",
+                    alignItems: "center",
+                    cursor: "pointer",
+
+                    "> a": {
+                      color: "#de8ebe",
+                      textDecoration: "unset",
+                      padding: "5px",
+                    },
+                  }}
+                >
+                  {session ? ( //fragment react
+                    <>
+                      <Tooltip title={session.user.email}>
+                        <Image
+                          onClick={handleProfileMenuOpen}
+                          src={fetchDefaultImages()}
+                          alt="avatar"
+                          height={35}
+                          width={35}
+                        />
+                      </Tooltip>
+                    </>
+                  ) : (
+                    <>
+                      <Link href={"/auth/signin"}>Login</Link>
+                    </>
+                  )}
+                </Box>
                 {/* <Drawer open={open} onClose={toggleDrawer(false)}>
                   {DrawerList}
                 </Drawer> */}
@@ -213,6 +299,7 @@ export default function AppHeader() {
             </Grid>
           </Grid>
         </Grid>
+        {renderMenu}
       </Container>
     </AppBar>
   );

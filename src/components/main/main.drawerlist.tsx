@@ -16,9 +16,21 @@ import {
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Image from "next/image";
+import { useSelector, useDispatch } from "react-redux";
+import { doDeleteCartItemAction } from "@/redux/order/orderSlice";
+import { formatPrice, handleCaculateTotalPrice } from "@/utils/functionShare";
+import { useRouter } from "next/navigation";
 
 const MainDrawerList = (props: any) => {
   const { toggleDrawer, open } = props;
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const cart: ICart[] = useSelector((state: any) => state.order.carts);
+
+  const handleDeteleItem = (id: any) => {
+    dispatch(doDeleteCartItemAction({ id: id }));
+  };
+
   return (
     <Drawer
       open={open}
@@ -31,61 +43,41 @@ const MainDrawerList = (props: any) => {
         },
       }}
     >
-      <Box
-        sx={{ width: 400 }}
-        role="presentation"
-        onClick={toggleDrawer(false)}
-      >
-        <ListItem
-          key={"value"}
-          secondaryAction={<DeleteOutlineIcon></DeleteOutlineIcon>}
-        >
-          <ListItemAvatar>
-            <Image
-              alt="image"
-              src={
-                "https://matpetfamily.com/wp-content/uploads/2024/10/image-2024-10-16T083639.534-300x300.png"
+      <Box sx={{ width: 400 }} role="presentation">
+        {cart.map((item) => {
+          return (
+            <ListItem
+              key={item._id}
+              secondaryAction={
+                <Button
+                  onClick={() => handleDeteleItem(item._id)}
+                  sx={{ color: "#de8ebe" }}
+                >
+                  <DeleteOutlineIcon></DeleteOutlineIcon>
+                </Button>
               }
-              width={80}
-              height={80}
-              style={{
-                objectFit: "contain",
-              }}
-            />
-          </ListItemAvatar>
-          <Box sx={{ marginLeft: "20px" }}>
-            <ListItemText primary={`Bichon Đực Đẹp Zai `} />
-            <ListItemText
-              primary={`2 x 12.000.000đ`}
-              sx={{ color: "#de8ebe" }}
-            />
-          </Box>
-        </ListItem>
-        <ListItem
-          key={"value"}
-          secondaryAction={<DeleteOutlineIcon></DeleteOutlineIcon>}
-        >
-          <ListItemAvatar>
-            <Image
-              alt="image"
-              src={
-                "https://matpetfamily.com/wp-content/uploads/2024/10/image-2024-10-16T083639.534-300x300.png"
-              }
-              width={80}
-              height={80}
-              style={{
-                objectFit: "contain",
-              }}
-            />
-          </ListItemAvatar>
-          <Box sx={{ marginLeft: "20px" }}>
-            <ListItemText primary={`Bichon Đực Đẹp Zai `} />
-            <ListItemText
-              primary={`2 x 12.000.000đ`}
-              sx={{ color: "#de8ebe" }}
-            />
-          </Box>
-        </ListItem>
+            >
+              <ListItemAvatar>
+                <Image
+                  alt="image"
+                  src={item.detail.image}
+                  width={80}
+                  height={80}
+                  style={{
+                    objectFit: "contain",
+                  }}
+                />
+              </ListItemAvatar>
+              <Box sx={{ marginLeft: "20px" }}>
+                <ListItemText primary={item.detail.name} />
+                <ListItemText
+                  primary={`${item.quantity} x ${item.detail.price}`}
+                  sx={{ color: "#de8ebe" }}
+                />
+              </Box>
+            </ListItem>
+          );
+        })}
       </Box>
       <Box
         sx={{
@@ -128,13 +120,27 @@ const MainDrawerList = (props: any) => {
                 color: "#de8ebe",
               }}
             >
-              50.000.000đ
+              {formatPrice(handleCaculateTotalPrice())}đ
             </Typography>
           </Button>
-          <Button key="two" sx={{ color: "#fff", backgroundColor: "#666" }}>
+          <Button
+            key="two"
+            sx={{ color: "#fff", backgroundColor: "#666" }}
+            onClick={() => {
+              toggleDrawer(false);
+              router.push("/cart");
+            }}
+          >
             Xem giỏ hàng
           </Button>
-          <Button key="three" sx={{ color: "#fff", backgroundColor: "#333" }}>
+          <Button
+            key="three"
+            sx={{ color: "#fff", backgroundColor: "#333" }}
+            onClick={() => {
+              toggleDrawer(false);
+              router.push("/pay");
+            }}
+          >
             Thanh toán
           </Button>
         </ButtonGroup>

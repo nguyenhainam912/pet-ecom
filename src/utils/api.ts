@@ -79,3 +79,7 @@ export const sendRequestFile = async <T>(props: IRequest) => { //type
         }
     });
 };
+
+export const fetchDefaultImages = () => {
+    return "/user/default-user.png"
+}

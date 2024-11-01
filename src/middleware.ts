@@ -9,9 +9,6 @@ export default withAuth({
 
 export const config = {
     matcher: [
-        "/cart",
         "/pay"
-
-
     ]
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPrice } from "@/utils/functionShare";
 import {
   Box,
   Button,
@@ -16,47 +17,14 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import React from "react";
+import { useSelector } from "react-redux";
+import MainRowCart from "./main.rowcart";
+import { useRouter } from "next/navigation";
 
-function createData(
-  image: string,
-  name: string,
-  price: string,
-  quantity: number,
-  total: string
-) {
-  return { image, name, price, quantity, total };
-}
-
-const rows = [
-  createData(
-    "https://matpetfamily.com/wp-content/uploads/2024/10/image-2024-10-16T083639.534-300x300.png",
-    "Cun",
-    "12.000.000",
-    2,
-    "12.000.000"
-  ),
-  createData(
-    "https://matpetfamily.com/wp-content/uploads/2024/10/image-2024-10-16T083639.534-300x300.png",
-    "Cun",
-    "12.000.000",
-    2,
-    "12.000.000"
-  ),
-];
 const MainTableCart = () => {
-  const [value, setValue] = React.useState(0);
+  const router = useRouter();
+  const cart: ICart[] = useSelector((state: any) => state.order.carts);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value === "" ? 0 : Number(event.target.value));
-  };
-
-  const handleBlur = () => {
-    if (value < 0) {
-      setValue(0);
-    } else if (value > 10) {
-      setValue(10);
-    }
-  };
   return (
     <>
       <TableContainer component={Paper}>
@@ -72,37 +40,12 @@ const MainTableCart = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, index) => (
-              <TableRow key={row.name + index}>
-                <TableCell align="left">{index + 1}</TableCell>
-                <TableCell align="center">
-                  <Image src={row.image} alt="" width={50} height={50} />
-                </TableCell>
-                <TableCell align="right">{row.name}</TableCell>
-                <TableCell align="right">
-                  <Typography sx={{ color: "#de8ebe", fontSize: "18px" }}>
-                    {row.price}đ
-                  </Typography>
-                </TableCell>
-                <TableCell align="right">
-                  <Input
-                    key={index}
-                    value={value}
-                    size="small"
-                    onChange={handleInputChange}
-                    onBlur={handleBlur}
-                    inputProps={{
-                      step: 1,
-                      min: 0,
-                      max: 10,
-                      type: "number",
-                      "aria-labelledby": "input-slider",
-                    }}
-                    sx={{ textDecoration: "none" }}
-                  />
-                </TableCell>
-                <TableCell align="right">{row.total}đ</TableCell>
-              </TableRow>
+            {cart.map((row, index) => (
+              <MainRowCart
+                detailCart={row}
+                index={index}
+                key={index}
+              ></MainRowCart>
             ))}
           </TableBody>
         </Table>
@@ -114,6 +57,7 @@ const MainTableCart = () => {
           color="secondary"
           sx={{ padding: "10px 20px" }}
           variant="outlined"
+          onClick={() => router.push("/pay")}
         >
           Tiến hành thanh toán
         </Button>

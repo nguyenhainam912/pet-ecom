@@ -6,6 +6,9 @@ import React from "react";
 import MainButton from "./main.button";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import { doAddCartAction } from "@/redux/order/orderSlice";
+import { useDispatch } from "react-redux";
+import { formatPrice } from "@/utils/functionShare";
 
 interface IProps {
   data: IProduct;
@@ -14,6 +17,7 @@ interface IProps {
 const MainDetailProduct = (props: IProps) => {
   const { data } = props;
   const [value, setValue] = React.useState(0);
+  const dispatch = useDispatch();
 
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
     setValue(newValue as number);
@@ -26,15 +30,30 @@ const MainDetailProduct = (props: IProps) => {
   const handleBlur = () => {
     if (value < 0) {
       setValue(0);
-    } else if (value > 10) {
-      setValue(10);
+    } else if (value > data.quantity) {
+      setValue(data.quantity);
     }
+  };
+
+  const handleAddCart = () => {
+    // let data = {
+    //   userId: session.user._id,
+    //   detail: [{ product: product._id, quantity: 1 }],
+    //   totalPrice: product.price,
+    // };
+    dispatch(doAddCartAction({ quantity: value, detail: data, _id: data._id }));
   };
 
   return (
     <Grid xs={12} container gap={4}>
       <Grid xs={5}>
-        <Image alt="" width={360} height={500} src={data.image} />
+        <Image
+          alt=""
+          width={360}
+          height={500}
+          src={data.image}
+          priority={true}
+        />
       </Grid>
       <Grid xs={6}>
         <Typography sx={{ fontSize: "22px", fontWeight: "bold" }}>
@@ -48,7 +67,7 @@ const MainDetailProduct = (props: IProps) => {
             margin: "20px 0 10px",
           }}
         >
-          {data.price}đ
+          {formatPrice(data.price)}đ
         </Typography>
         <Typography
           sx={{
@@ -95,8 +114,8 @@ const MainDetailProduct = (props: IProps) => {
               sx={{ textDecoration: "none" }}
             />
           </Grid>
-          <Grid>
-            <MainButton>
+          <Grid sx={{ cursor: "pointer" }}>
+            <MainButton onClick={handleAddCart}>
               <span style={{ textAlign: "center" }}>
                 MUA HÀNG{" "}
                 <ChevronRightOutlinedIcon

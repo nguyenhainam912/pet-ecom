@@ -55,37 +55,17 @@ export const handleGetCatalog = async () => {
     return res;
 }
 
-
-export const handleAddCartAction = async (data: any) => {
+export const handleAddOrderAction = async (data: IOrder) => {
     const session = await getServerSession(authOptions);
-    const res = await sendRequest<IBackendRes<any>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/cart`,
+    const res = await sendRequest<IBackendRes<IOrder>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/order`,
         method: "POST",
         headers: {
             Authorization: `Bearer ${session?.access_token}`,
         },
         body: { ...data }
     })
-
-    revalidateTag("cart-by-user")
-
     return res;
 }
 
-export const handleGetCartAction = async () => {
-    const session = await getServerSession(authOptions);
-    const res = await sendRequest<IBackendRes<any>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/cart/byUser`,
-        method: "GET",
-        headers: {
-            Authorization: `Bearer ${session?.access_token}`,
-        },
-        queryParams: {
-            userId: session?.user?._id
-        },
-        nextOption: {
-            next: { tags: ['cart-by-user'] }
-        }
-    })
-    return res;
-}
+

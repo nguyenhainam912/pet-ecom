@@ -57,4 +57,25 @@ declare global {
         "updatedAt": string;
     }
 
+    interface ICart {
+        "_id": string;
+        "quantity": number;
+        "detail": IProduct
+    }
+
+
+    interface IDetailOrder {
+        "productId": string;
+        "quantity": number;
+    }
+
+    interface IOrder {
+        "userId": string;
+        "totalPrice": number;
+        "address": string;
+        "phone": string;
+        "pay": string; 
+        "detail": IDetailOrder[]
+    }
+
 }

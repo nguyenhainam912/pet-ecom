@@ -9,8 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import GoogleIcon from "@mui/icons-material/Google";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -23,17 +21,22 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
 import { useRouter } from "next/navigation";
-const AuthSignIn = (props: any) => {
+import { sendRequest } from "@/utils/api";
+import { IUser } from "@/types/next-auth";
+const AuthRegister = (props: any) => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [repassword, setRePassword] = useState<string>("");
 
   const [isErrorUsername, setIsErrorUsername] = useState<boolean>(false);
   const [isErrorPassword, setIsErrorPassword] = useState<boolean>(false);
+  const [isErrorRePassword, setIsErrorRePassword] = useState<boolean>(false);
 
   const [errorUsername, setErrorUsername] = useState<string>("");
   const [errorPassword, setErrorPassword] = useState<string>("");
+  const [errorRePassword, setErrorRePassword] = useState<string>("");
 
   const [openMessage, setOpenMessage] = useState<boolean>(false);
   const [resMessage, setResMessage] = useState<string>("");
@@ -54,18 +57,33 @@ const AuthSignIn = (props: any) => {
       setErrorPassword("Password is not empty.");
       return;
     }
+    if (!repassword) {
+      setIsErrorRePassword(true);
+      setErrorRePassword("Re-Enter Password is not empty.");
+      return;
+    }
 
-    const res = await signIn("credentials", {
-      username: username,
-      password: password,
-      redirect: false,
+    if (repassword != password) {
+      setIsErrorRePassword(true);
+      setErrorRePassword("The re-entered password does not match.");
+      return;
+    }
+
+    const res = await sendRequest<IBackendRes<IUser>>({
+      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/register`,
+      method: "POST",
+      body: {
+        email: username,
+        password: password,
+      },
     });
+    console.log(res);
     if (!res?.error) {
       //redirect to home
-      router.push("/");
+      router.push("/auth/signin");
     } else {
       setOpenMessage(true);
-      setResMessage(res.error);
+      setResMessage(res.message as string);
     }
   };
 
@@ -109,6 +127,32 @@ const AuthSignIn = (props: any) => {
           ),
         }}
       />
+      <TextField
+        onChange={(event) => setRePassword(event.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleSubmit();
+          }
+        }}
+        variant="outlined"
+        margin="normal"
+        required
+        fullWidth
+        name="repassword"
+        label="Nhập lại Password"
+        type={showPassword ? "text" : "password"}
+        error={isErrorRePassword}
+        helperText={errorRePassword}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton onClick={() => setShowPassword(!showPassword)}>
+                {showPassword === false ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
       <Button
         sx={{
           my: 3,
@@ -119,7 +163,7 @@ const AuthSignIn = (props: any) => {
         color="primary"
         onClick={handleSubmit}
       >
-        Sign In
+        Đăng ký
       </Button>
 
       <Snackbar
@@ -139,4 +183,4 @@ const AuthSignIn = (props: any) => {
   );
 };
 
-export default AuthSignIn;
+export default AuthRegister;
