@@ -78,4 +78,22 @@ declare global {
         "detail": IDetailOrder[]
     }
 
+    interface IDetailOrderDB {
+        "productId": IProduct;
+        "quantity": number;
+    }
+    
+    interface IOrderDB {
+        "_id": string
+        "userId": string;
+        "totalPrice": number;
+        "address": string;
+        "phone": string;
+        "pay": string; 
+        "detail": IDetailOrderDB[]
+        "createdAt": Date
+    }
+
+    
+
 }

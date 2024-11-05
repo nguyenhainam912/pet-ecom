@@ -96,7 +96,7 @@ const MainCard = (props: IProps) => {
           <Typography
             sx={{ color: "#de8ebe", fontSize: "20px", fontWeight: 600 }}
           >
-            {formatPrice(product.price)}đ
+            {formatPrice(product.price)}₫
           </Typography>
         </CardContent>
       </CardActionArea>

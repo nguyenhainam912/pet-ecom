@@ -36,7 +36,10 @@ import { useSession, signOut } from "next-auth/react";
 import { useSelector } from "react-redux";
 import { formatPrice, handleCaculateTotalPrice } from "@/utils/functionShare";
 import { fetchDefaultImages } from "@/utils/api";
-import { Space } from "antd";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -123,12 +126,33 @@ export default function AppHeader() {
       transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       sx={{
-        "> li": {
-          padding: "20px 30px",
+        "& .MuiMenuItem-root": {
+          padding: "4px 10px",
+          "> a": {
+            padding: "0 10px",
+          },
         },
       }}
     >
+      {session?.user?.role == "ADMIN" && (
+        <MenuItem>
+          <DashboardOutlinedIcon></DashboardOutlinedIcon>
+          <Link
+            onClick={() => {
+              handleMenuClose();
+            }}
+            href={`/dashboard`}
+            style={{
+              color: "unset",
+              textDecoration: "unset",
+            }}
+          >
+            Trang quản trị
+          </Link>
+        </MenuItem>
+      )}
       <MenuItem>
+        <ShoppingCartOutlinedIcon></ShoppingCartOutlinedIcon>
         <Link
           onClick={() => {
             handleMenuClose();
@@ -142,13 +166,30 @@ export default function AppHeader() {
           Xem rỏ hàng
         </Link>
       </MenuItem>
+      <MenuItem>
+        <FormatListBulletedOutlinedIcon></FormatListBulletedOutlinedIcon>
+        <Link
+          onClick={() => {
+            handleMenuClose();
+          }}
+          href={`/order`}
+          style={{
+            color: "unset",
+            textDecoration: "unset",
+          }}
+        >
+          Xem đơn hàng
+        </Link>
+      </MenuItem>
+      <Divider></Divider>
       <MenuItem
         onClick={() => {
           handleMenuClose();
           signOut();
         }}
       >
-        Logout
+        <LogoutOutlinedIcon></LogoutOutlinedIcon>
+        <Typography sx={{ padding: "0 4px " }}>Đăng xuất</Typography>
       </MenuItem>
     </Menu>
   );
@@ -229,7 +270,7 @@ export default function AppHeader() {
                         <Box>
                           <Typography sx={{ fontSize: "12px" }}>
                             {cart?.length} Sản phẩm -{" "}
-                            {formatPrice(handleCaculateTotalPrice())}đ
+                            {formatPrice(handleCaculateTotalPrice())}₫
                           </Typography>
                         </Box>
                       </Grid>

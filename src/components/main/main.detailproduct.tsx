@@ -67,7 +67,7 @@ const MainDetailProduct = (props: IProps) => {
             margin: "20px 0 10px",
           }}
         >
-          {formatPrice(data.price)}đ
+          {formatPrice(data.price)}₫
         </Typography>
         <Typography
           sx={{

@@ -2,12 +2,9 @@
 import * as React from "react";
 import ListSubheader from "@mui/material/ListSubheader";
 import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
 import { Divider } from "@mui/material";
 
 import NestedListItem from "@/components/main/main.nestedlistitem";
-import { sendRequest } from "@/utils/api";
 import { handleGetCatalog } from "@/utils/actions";
 
 const NestedList = () => {

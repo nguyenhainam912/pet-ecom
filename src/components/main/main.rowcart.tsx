@@ -21,7 +21,6 @@ const MainRowCart = (props: IProps) => {
   );
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("nput", event.target.value);
     setValue(event.target.value === "" ? 0 : Number(event.target.value));
   };
 
@@ -34,7 +33,6 @@ const MainRowCart = (props: IProps) => {
   };
 
   useEffect(() => {
-    console.log(value);
     dispatch(
       doUpdateCartAction({
         quantity: value,
@@ -42,7 +40,6 @@ const MainRowCart = (props: IProps) => {
         _id: detailCart._id,
       })
     );
-    console.log(detailCart);
     setTotalPrice(value * detailCart.detail.price);
   }, [value]);
   return (
@@ -54,7 +51,7 @@ const MainRowCart = (props: IProps) => {
       <TableCell align="right">{detailCart.detail.name}</TableCell>
       <TableCell align="right">
         <Typography sx={{ color: "#de8ebe", fontSize: "18px" }}>
-          {formatPrice(detailCart.detail.price)}đ
+          {formatPrice(detailCart.detail.price)}₫
         </Typography>
       </TableCell>
       <TableCell align="right">
@@ -73,7 +70,7 @@ const MainRowCart = (props: IProps) => {
           sx={{ textDecoration: "none" }}
         />
       </TableCell>
-      <TableCell align="right">{formatPrice(totalPrice)}đ</TableCell>
+      <TableCell align="right">{formatPrice(totalPrice)}₫</TableCell>
     </TableRow>
   );
 };

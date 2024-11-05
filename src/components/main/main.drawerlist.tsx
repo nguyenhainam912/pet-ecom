@@ -71,7 +71,9 @@ const MainDrawerList = (props: any) => {
               <Box sx={{ marginLeft: "20px" }}>
                 <ListItemText primary={item.detail.name} />
                 <ListItemText
-                  primary={`${item.quantity} x ${item.detail.price}`}
+                  primary={`${item.quantity} x ${formatPrice(
+                    item.detail.price
+                  )}₫`}
                   sx={{ color: "#de8ebe" }}
                 />
               </Box>
@@ -120,7 +122,7 @@ const MainDrawerList = (props: any) => {
                 color: "#de8ebe",
               }}
             >
-              {formatPrice(handleCaculateTotalPrice())}đ
+              {formatPrice(handleCaculateTotalPrice())}₫
             </Typography>
           </Button>
           <Button

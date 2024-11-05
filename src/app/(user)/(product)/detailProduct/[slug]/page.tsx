@@ -8,6 +8,9 @@ export default async function DetailProduct(props: any) {
     url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/product/byId`,
     method: "GET",
     queryParams: { id: params.slug },
+    nextOption: {
+      next: { tags: ["list-product"] },
+    },
   });
 
   let data: IProduct = res.data as IProduct;

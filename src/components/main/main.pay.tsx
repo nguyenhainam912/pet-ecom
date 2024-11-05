@@ -24,6 +24,9 @@ import { handleAddOrderAction } from "@/utils/actions";
 import { useDispatch } from "react-redux";
 import { doPlaceOrderAction } from "@/redux/order/orderSlice";
 import { useRouter } from "next/navigation";
+import { message } from "antd";
+import { loadStripe } from "@stripe/stripe-js";
+import HomeStripe from "@/app/stripe/HomeStripe";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#fff",
@@ -64,6 +67,8 @@ const MainPay = () => {
   const [errorPhone, setErrorPhone] = useState<string>("");
   const [errorAddress, setErrorAddress] = useState<string>("");
 
+  const [isOpenStripe, setIsOpenStripe] = useState<boolean>(false);
+
   const cart = useSelector((state: any) => state.order.carts);
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +77,7 @@ const MainPay = () => {
 
   const totalPrice = handleCaculateTotalPrice();
 
-  const handleSubmit = async () => {
+  const handleCheck = () => {
     setIsErrorName(false);
     setIsErrorEmail(false);
     setIsErrorPhone(false);
@@ -86,26 +91,28 @@ const MainPay = () => {
     if (!name) {
       setIsErrorName(true);
       setErrorName("Name is not empty.");
-      return;
+      return false;
     }
     if (!email) {
       setIsErrorEmail(true);
       setErrorEmail("Email is not empty.");
-      return;
+      return false;
     }
 
     if (!address) {
       setIsErrorAddress(true);
       setErrorAddress("Address is not empty.");
-      return;
+      return false;
     }
 
     if (!phone) {
       setIsErrorPhone(true);
       setErrorPhone("Phone is not empty.");
-      return;
+      return false;
     }
+  };
 
+  const handleAddOrder = async () => {
     const detail: IDetailOrder[] = cart.map((item: ICart) => {
       return { quantity: item.quantity, productId: item._id };
     });
@@ -122,14 +129,23 @@ const MainPay = () => {
     const res = await handleAddOrderAction(data);
     if (res && res.statusCode == 201) {
       dispatch(doPlaceOrderAction(cart));
-      router.push("/");
+      if (value == "TM") router.push("/");
+    } else {
+      message.error("Đặt hàng không thành công");
     }
+  };
+
+  const handleSubmit = async () => {
+    if ((await handleCheck()) == false) return;
+    await handleAddOrder();
   };
 
   useEffect(() => {
     if (value === "TM") {
       setHelperText("Trả tiền mặt khi giao hàng");
+      setIsOpenStripe(false);
     } else if (value === "CK") {
+      setIsOpenStripe(true);
       setHelperText(
         "Thực hiện thanh toán vào ngay tài khoản ngân hàng của chúng tôi." +
           "Đơn hàng sẽ đươc giao sau khi tiền đã chuyển."
@@ -204,7 +220,7 @@ const MainPay = () => {
                   {item.detail.name} x{item.quantity}{" "}
                 </Item>
                 <Item sx={{ fontWeight: 500 }}>
-                  {formatPrice(item.detail.price * item.quantity)}đ
+                  {formatPrice(item.detail.price * item.quantity)}₫
                 </Item>
               </Stack>
             );
@@ -216,7 +232,7 @@ const MainPay = () => {
           </Stack>
           <Stack direction="row">
             <Item sx={{ borderRight: "0px" }}>Tổng </Item>
-            <Item>{formatPrice(handleCaculateTotalPrice())}đ</Item>
+            <Item>{formatPrice(handleCaculateTotalPrice())}₫</Item>
           </Stack>
         </Box>
         <Box>
@@ -240,22 +256,30 @@ const MainPay = () => {
             <FormHelperText>{helperText}</FormHelperText>
           </FormControl>
         </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "flex-end",
-            marginTop: "20px",
-          }}
-        >
-          <Button
-            color="secondary"
-            sx={{ padding: "10px 20px" }}
-            variant="outlined"
-            onClick={handleSubmit}
+        {isOpenStripe && (
+          <HomeStripe
+            handleCheck={handleCheck}
+            handleAddOrder={handleAddOrder}
+          ></HomeStripe>
+        )}
+        {!isOpenStripe && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginTop: "20px",
+            }}
           >
-            Đặt hàng
-          </Button>
-        </Box>
+            <Button
+              color="secondary"
+              sx={{ padding: "10px 20px" }}
+              variant="outlined"
+              onClick={handleSubmit}
+            >
+              Đặt hàng
+            </Button>
+          </Box>
+        )}
       </Grid>
     </Grid>
   );

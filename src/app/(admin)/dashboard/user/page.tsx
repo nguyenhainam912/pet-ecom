@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth/next";
-import UserTable from "@/components/admin/user.table";
+import UserTable from "@/components/admin/user/user.table";
 import { sendRequest } from "@/utils/api";
+import { authOptions } from "@/app/api/auth/auth.options";
 
 interface IProps {
   params: { id: string };
@@ -9,17 +10,17 @@ interface IProps {
 const ManageUserPage = async (props: IProps) => {
   const current = props?.searchParams?.current ?? 1;
   const pageSize = props?.searchParams?.pageSize ?? 10;
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
 
   const res = await sendRequest<IBackendRes<any>>({
-    url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users`,
+    url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/user`,
     method: "GET",
     queryParams: {
       current,
       pageSize,
     },
     headers: {
-      Authorization: `Bearer ${session?.user?.access_token}`,
+      Authorization: `Bearer ${session?.access_token}`,
     },
     nextOption: {
       next: { tags: ["list-users"] },
@@ -28,7 +29,7 @@ const ManageUserPage = async (props: IProps) => {
 
   return (
     <div>
-      <UserTable users={res?.data?.results ?? []} meta={res?.data?.meta} />
+      <UserTable users={res?.data?.result ?? []} meta={res?.data?.meta} />
     </div>
   );
 };

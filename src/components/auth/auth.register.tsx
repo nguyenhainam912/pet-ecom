@@ -77,7 +77,6 @@ const AuthRegister = (props: any) => {
         password: password,
       },
     });
-    console.log(res);
     if (!res?.error) {
       //redirect to home
       router.push("/auth/signin");
