@@ -1,19 +1,33 @@
 "use client";
 import {
   FormControl,
+  InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const MainSelect = () => {
-  const [age, setAge] = useState("");
+  const [condition, setCondition] = useState("");
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
 
   const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value);
+    setCondition(event.target.value);
   };
+
+  useEffect(() => {
+    if (condition) {
+      const params = new URLSearchParams(searchParams);
+      params.set("sort", condition);
+      replace(`${pathname}?${params.toString()}`);
+    }
+  }, [condition]);
+
   return (
     <FormControl
       sx={{
@@ -29,16 +43,16 @@ const MainSelect = () => {
     >
       <Typography>Sắp xếp: </Typography>
       <Select
-        value={age}
+        value={condition}
         onChange={handleChange}
         displayEmpty
         inputProps={{ "aria-label": "Without label" }}
       >
         <MenuItem value="">
-          <em>Sắp Xêp Theo Sản Phẩm Mới</em>
+          <em>Sắp xếp theo giá</em>
         </MenuItem>
-        <MenuItem value={10}>Sắp Xêp Theo Giá: Cao Đến Thấp</MenuItem>
-        <MenuItem value={10}>Sắp Xêp Theo Giá: Thấp Đến Cao</MenuItem>
+        <MenuItem value={"-price"}>Cao Đến Thấp</MenuItem>
+        <MenuItem value={"price"}>Thấp Đến Cao</MenuItem>
       </Select>
     </FormControl>
   );

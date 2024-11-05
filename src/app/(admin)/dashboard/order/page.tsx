@@ -1,19 +1,7 @@
-import {
-  Button,
-  Form,
-  Popover,
-  Row,
-  Space,
-  Table,
-  message,
-  notification,
-} from "antd";
-import { useEffect, useState } from "react";
-
-import { WarningTwoTone } from "@ant-design/icons";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/auth.options";
 import { sendRequest } from "@/utils/api";
+import OrderTable from "@/components/admin/order/order.table";
 
 interface IProps {
   params: { id: string };
@@ -41,7 +29,7 @@ const ManageOrderPage = async (props: IProps) => {
 
   return (
     <div>
-      {/* <OrderTable orders={res?.data?.result ?? []} meta={res?.data?.meta} /> */}
+      <OrderTable orders={res?.data?.result ?? []} meta={res?.data?.meta} />
     </div>
   );
 };

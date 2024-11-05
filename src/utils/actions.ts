@@ -144,6 +144,7 @@ export const handleGetOrderById = async (id: string) => {
         },
         queryParams: {
             userId: id,
+            sort:"-createdAt"
         },
         nextOption: {
             next: { tags: ["list-order"] },

@@ -329,7 +329,9 @@ export default function AppHeader() {
                   onKeyDown={(e: any) => {
                     if (e.key === "Enter") {
                       if (e?.target?.value)
-                        router.push(`/search?q=${e?.target?.value}`);
+                        router.push(
+                          `/productCatalog/${e?.target?.value}?name=${e?.target?.value}`
+                        );
                     }
                   }}
                 />

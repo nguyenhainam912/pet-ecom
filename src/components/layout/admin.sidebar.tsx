@@ -12,6 +12,7 @@ import { AdminContext } from "@/library/admin.context";
 import type { MenuProps } from "antd";
 import Link from "next/link";
 import Icon from "@ant-design/icons/lib/components/Icon";
+import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 
 const PandaSvg = () => (
   <svg viewBox="0 0 1024 1024" width="1em" height="1em" fill="currentColor">
@@ -82,6 +83,11 @@ const AdminSideBar = () => {
           key: "pets",
           label: <Link href={"/dashboard/product"}>Manage Pets</Link>,
           icon: <PandaIcon style={{ fontSize: "20px" }} />,
+        },
+        {
+          key: "orders",
+          label: <Link href={"/dashboard/order"}>Manage Order</Link>,
+          icon: <ArticleOutlinedIcon />,
         },
       ],
     },

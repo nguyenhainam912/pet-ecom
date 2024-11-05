@@ -7,10 +7,12 @@ import { DownOutlined, SmileOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Dropdown, Space } from "antd";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const AdminHeader = (props: any) => {
   // const { data: session, status } = useSession();
   const { session } = props;
+  const router = useRouter();
 
   const { Header } = Layout;
   const { collapseMenu, setCollapseMenu } = useContext(AdminContext)!;
@@ -18,9 +20,8 @@ const AdminHeader = (props: any) => {
   const items: MenuProps["items"] = [
     {
       key: "1",
-      label: <span>Settings</span>,
+      label: <span onClick={() => router.push("/")}>Home</span>,
     },
-
     {
       key: "4",
       danger: true,
